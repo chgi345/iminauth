@@ -15,8 +15,8 @@ import io.ktor.auth.*
 import io.ktor.auth.jwt.*
 import io.ktor.gson.*
 import io.ktor.features.*
-
-fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
+import io.ktor.server.engine.*
+import io.ktor.server.netty.*
 
 
 @Suppress("unused") // Referenced in application.conf
@@ -66,6 +66,12 @@ fun Application.module(testing: Boolean = false) {
         users(db, jwtService, hashFunction)
         todos(db)
     }
+}
+
+
+fun main(args: Array<String>) {
+    val port = Integer.valueOf(System.getenv("PORT"))
+    embeddedServer(Netty, port) { Application::module }.start(wait = true)
 }
 
 const val API_VERSION = "/v1"

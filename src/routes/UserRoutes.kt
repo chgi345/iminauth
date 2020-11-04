@@ -24,6 +24,11 @@ const val USER_LOGIN = "$USERS/login"
 const val USER_LOGOUT = "$USERS/logout"
 const val USER_CREATE = "$USERS/create"
 const val USER_DELETE = "$USERS/delete"
+const val USER_IS_ALIVE = "$USERS/alive"
+
+@KtorExperimentalLocationsAPI
+@Location(USER_IS_ALIVE)
+class UserIsAliveRoute
 
 @KtorExperimentalLocationsAPI
 @Location(USER_LOGIN)
@@ -43,9 +48,13 @@ class UserDeleteRoute
 
 @KtorExperimentalLocationsAPI
 fun Route.users(db: Repository, jwtService: JwtService, hashFunction: (String) -> String) {
+    get<UserIsAliveRoute> {
+        call.respond(HttpStatusCode.Accepted, "I#m fine")
+    }
     post<UserLoginRoute> {
         val signinParameters = call.receive<Parameters>()
-        val password = signinParameters["password"] ?: return@post call.respond(HttpStatusCode.Unauthorized, "Missing Fields")
+        val password =
+            signinParameters["password"] ?: return@post call.respond(HttpStatusCode.Unauthorized, "Missing Fields")
         val email = signinParameters["email"] ?: return@post call.respond(HttpStatusCode.Unauthorized, "Missing Fields")
 
         val hash = hashFunction(password)
@@ -82,7 +91,8 @@ fun Route.users(db: Repository, jwtService: JwtService, hashFunction: (String) -
     }
     delete<UserDeleteRoute> {
         val signinParameters = call.receive<Parameters>()
-        val email = signinParameters["email"] ?: return@delete call.respond(HttpStatusCode.Unauthorized, "Missing Fields")
+        val email =
+            signinParameters["email"] ?: return@delete call.respond(HttpStatusCode.Unauthorized, "Missing Fields")
 
         try {
             val currentUser = db.findUserByEmail(email)
@@ -98,8 +108,10 @@ fun Route.users(db: Repository, jwtService: JwtService, hashFunction: (String) -
     }
     post<UserCreateRoute> {
         val signupParameters = call.receive<Parameters>()
-        val password = signupParameters["password"] ?: return@post call.respond(HttpStatusCode.Unauthorized, "Missing Fields")
-        val displayName = signupParameters["displayName"] ?: return@post call.respond(HttpStatusCode.Unauthorized, "Missing Fields")
+        val password =
+            signupParameters["password"] ?: return@post call.respond(HttpStatusCode.Unauthorized, "Missing Fields")
+        val displayName =
+            signupParameters["displayName"] ?: return@post call.respond(HttpStatusCode.Unauthorized, "Missing Fields")
         val email = signupParameters["email"] ?: return@post call.respond(HttpStatusCode.Unauthorized, "Missing Fields")
 
         val hash = hashFunction(password)
