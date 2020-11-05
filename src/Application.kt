@@ -69,10 +69,7 @@ fun Application.module(testing: Boolean = false) {
 }
 
 
-fun main(args: Array<String>) {
-    val port = Integer.valueOf(System.getenv("PORT"))
-    embeddedServer(Netty, port) { Application::module }.start(wait = true)
-}
+fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
 const val API_VERSION = "/v1"
 
